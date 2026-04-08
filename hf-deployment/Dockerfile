@@ -1,5 +1,4 @@
-# Production Incident Response Simulator - Gradio Interface
-# This version runs the Gradio web interface on port 7860
+# Production Incident Response Simulator - Docker Image
 FROM python:3.11-slim
 
 WORKDIR /app
@@ -9,7 +8,7 @@ ENV PYTHONIOENCODING=utf-8
 ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8
 
-# Install dependencies (including gradio)
+# Install dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
@@ -19,11 +18,11 @@ COPY . .
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
 
-# Expose Gradio port
-EXPOSE 7860
-
 # Validate environment on build
 RUN python -c "from env import ProductionIncidentEnv; env = ProductionIncidentEnv(); print('Environment validated successfully')"
 
-# Run Gradio app
-CMD ["python", "app.py"]
+# Expose API port
+EXPOSE 7860
+
+# Run API server for OpenEnv hackathon
+CMD ["python", "api_server.py"]

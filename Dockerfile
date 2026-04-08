@@ -21,5 +21,8 @@ ENV PYTHONUNBUFFERED=1
 # Validate environment on build
 RUN python -c "from env import ProductionIncidentEnv; env = ProductionIncidentEnv(); print('Environment validated successfully')"
 
-# Default command: run baseline
-CMD ["python", "inference.py", "--episodes", "3"]
+# Expose API port
+EXPOSE 7860
+
+# Run API server for OpenEnv hackathon
+CMD ["python", "api_server.py"]
