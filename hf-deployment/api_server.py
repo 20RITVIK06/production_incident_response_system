@@ -20,7 +20,7 @@ def reset():
     
     try:
         # Get task from request if provided
-        data = request.get_json() or {}
+        data = request.get_json(force=True, silent=True) or {}
         task = data.get('task', current_task)
         seed = data.get('seed', 42)
         
@@ -51,7 +51,13 @@ def step():
         }), 400
     
     try:
-        data = request.get_json()
+        data = request.get_json(force=True, silent=True)
+        if not data:
+            return jsonify({
+                'error': 'No JSON data provided',
+                'status': 'error'
+            }), 400
+            
         action = Action(**data)
         
         obs, reward, done, info = env_instance.step(action)
