@@ -94,6 +94,24 @@ def state():
             'status': 'error'
         }), 500
 
+@app.route('/', methods=['GET'])
+def index():
+    """Root endpoint with API documentation."""
+    return jsonify({
+        'name': 'Production Incident Response Simulator',
+        'version': '1.0.0',
+        'status': 'running',
+        'endpoints': {
+            'POST /reset': 'Reset environment (body: {task, seed})',
+            'POST /step': 'Take action (body: {action_type, target})',
+            'GET /state': 'Get current state',
+            'GET /health': 'Health check'
+        },
+        'tasks': ['easy', 'medium', 'hard'],
+        'actions': ['restart_service', 'scale_service', 'rollback_deployment', 
+                   'inspect_logs', 'check_metrics', 'apply_patch', 'do_nothing']
+    }), 200
+
 @app.route('/health', methods=['GET'])
 def health():
     """Health check endpoint."""
