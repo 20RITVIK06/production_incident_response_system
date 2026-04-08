@@ -5,29 +5,42 @@ Runs agent through all tasks and outputs reproducible scores.
 
 import os
 import json
+import sys
 from typing import Dict, List, Optional
 from openai import OpenAI
 from env import ProductionIncidentEnv, ACTION_SPACE, VALID_TARGETS
 from models import Action
 
+# Environment variables with defaults
+API_BASE_URL = os.getenv("API_BASE_URL", "https://api.openai.com/v1")
+MODEL_NAME = os.getenv("MODEL_NAME", "gpt-4")
+HF_TOKEN = os.getenv("HF_TOKEN")  # Optional - only for Hugging Face inference
+
+# Optional - if using from_docker_image()
+LOCAL_IMAGE_NAME = os.getenv("LOCAL_IMAGE_NAME")
+
 
 class BaselineAgent:
     """GPT-4 powered baseline agent for incident response."""
     
-    def __init__(self, model: str = "gpt-4", temperature: float = 0.0):
+    def __init__(self, model: str = None, temperature: float = 0.0):
         """
         Initialize baseline agent.
         
         Args:
-            model: OpenAI model to use
+            model: OpenAI model to use (defaults to MODEL_NAME env var)
             temperature: Sampling temperature (0 for deterministic)
         """
         api_key = os.getenv("OPENAI_API_KEY")
         if not api_key:
             raise ValueError("OPENAI_API_KEY environment variable not set")
         
-        self.client = OpenAI(api_key=api_key)
-        self.model = model
+        # Use environment variables for configuration
+        self.client = OpenAI(
+            api_key=api_key,
+            base_url=API_BASE_URL
+        )
+        self.model = model or MODEL_NAME
         self.temperature = temperature
         self.conversation_history = []
     
@@ -161,9 +174,12 @@ What action do you take?
 
 
 def run_episode(env: ProductionIncidentEnv, agent: BaselineAgent, verbose: bool = True) -> Dict:
-    """Run a single episode."""
+    """Run a single episode with structured stdout logging."""
     agent.reset()
     obs = env.reset()
+    
+    # START log (required format)
+    print("START", flush=True)
     
     done = False
     episode_rewards = []
@@ -177,6 +193,14 @@ def run_episode(env: ProductionIncidentEnv, agent: BaselineAgent, verbose: bool 
     while not done:
         # Agent selects action
         action = agent.select_action(obs.model_dump())
+        
+        # STEP log (required format)
+        step_data = {
+            "step": step_count + 1,
+            "action_type": action.action_type,
+            "target": action.target
+        }
+        print(f"STEP {json.dumps(step_data)}", flush=True)
         
         if verbose:
             print(f"Step {step_count + 1}: {action.action_type}" + 
@@ -193,6 +217,15 @@ def run_episode(env: ProductionIncidentEnv, agent: BaselineAgent, verbose: bool 
     
     # Episode complete
     episode_info = info.get("episode", {})
+    
+    # END log (required format)
+    end_data = {
+        "success": episode_info.get('success', False),
+        "score": episode_info.get('score', 0.0),
+        "steps_taken": episode_info.get('steps_taken', 0),
+        "root_cause": episode_info.get('root_cause', 'unknown')
+    }
+    print(f"END {json.dumps(end_data)}", flush=True)
     
     if verbose:
         print(f"\n{'='*60}")
@@ -215,7 +248,7 @@ def run_baseline(num_episodes: int = 5, task: Optional[str] = None):
         num_episodes: Number of episodes per task
         task: Specific task to run (None = all tasks)
     """
-    agent = BaselineAgent(model="gpt-4", temperature=0.0)
+    agent = BaselineAgent(temperature=0.0)  # Uses MODEL_NAME from env
     
     tasks_to_run = [task] if task else ["easy", "medium", "hard"]
     

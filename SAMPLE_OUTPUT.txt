@@ -1,0 +1,36 @@
+Sample Structured Output from inference.py
+==========================================
+
+This shows the required START/STEP/END format for hackathon submission:
+
+START
+============================================================
+Starting episode: Easy Task - API Service Crash
+============================================================
+
+--- Episode 1/1 ---
+STEP {"step": 1, "action_type": "inspect_logs", "target": null}
+Step 1: inspect_logs
+  Reward: +0.20 | Useful diagnostic action
+STEP {"step": 2, "action_type": "restart_service", "target": "api"}
+Step 2: restart_service -> api
+  Reward: +1.00 | Incident resolved successfully!
+END {"success": true, "score": 0.950, "steps_taken": 2, "root_cause": "api_crash"}
+
+============================================================
+Episode Complete!
+  Success: True
+  Score: 0.950
+  Steps: 2 (optimal: 2)
+  Root Cause: api_crash
+  Diagnosis Correct: True
+============================================================
+
+Key Points:
+-----------
+1. START appears at the beginning of each episode
+2. STEP appears for each action with JSON data
+3. END appears at episode completion with JSON results
+4. All structured logs use flush=True for immediate output
+5. Environment variables (API_BASE_URL, MODEL_NAME, HF_TOKEN) are configured
+6. OpenAI client uses these environment variables

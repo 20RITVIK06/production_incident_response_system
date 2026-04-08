@@ -144,15 +144,27 @@ print(f"Score: {info['score']}")
 ### Run Baseline Agent
 
 ```bash
-# Set OpenAI API key
+# Set required environment variables
 export OPENAI_API_KEY=your_key_here
+
+# Optional: Configure API endpoint and model
+export API_BASE_URL=https://api.openai.com/v1  # Default
+export MODEL_NAME=gpt-4                         # Default
+export HF_TOKEN=your_hf_token                   # Optional, for HF inference
 
 # Run baseline on all tasks
 python inference.py
 
 # Run specific task
-python inference.py --task medium
+python inference.py --task medium --episodes 3
 ```
+
+**Environment Variables:**
+- `OPENAI_API_KEY` (required): Your OpenAI API key
+- `API_BASE_URL` (optional): API endpoint, defaults to OpenAI
+- `MODEL_NAME` (optional): Model to use, defaults to gpt-4
+- `HF_TOKEN` (optional): Hugging Face token for inference API
+- `LOCAL_IMAGE_NAME` (optional): Docker image name when using from_docker_image()
 
 ### Docker Deployment
 
