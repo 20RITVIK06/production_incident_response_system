@@ -1,0 +1,127 @@
+name: production-incident-response-simulator
+version: 1.0.0
+description: |
+  A realistic OpenEnv-compatible environment simulating production incident response
+  in a distributed microservices system. Agents must diagnose and resolve incidents
+  with partial observability, noisy signals, and time pressure.
+
+author: Senior Distributed Systems Engineer
+license: MIT
+tags:
+  - devops
+  - incident-response
+  - distributed-systems
+  - debugging
+  - production
+
+environment:
+  class: ProductionIncidentEnv
+  module: env
+
+observation_space:
+  type: dict
+  properties:
+    logs:
+      type: string
+      description: Recent log entries from all services
+    metrics:
+      type: dict
+      description: System performance metrics
+      properties:
+        api_cpu:
+          type: float
+          range: [0, 100]
+        api_latency:
+          type: float
+          range: [0, 10000]
+        api_memory:
+          type: float
+          range: [0, 100]
+        db_cpu:
+          type: float
+          range: [0, 100]
+        db_connections:
+          type: integer
+          range: [0, 100]
+        db_query_time:
+          type: float
+          range: [0, 5000]
+        cache_hit_rate:
+          type: float
+          range: [0, 1]
+        cache_memory:
+          type: float
+          range: [0, 100]
+        queue_depth:
+          type: integer
+          range: [0, 10000]
+        error_rate:
+          type: float
+          range: [0, 100]
+    alerts:
+      type: array
+      items:
+        type: string
+    time_elapsed:
+      type: integer
+      range: [0, 20]
+    previous_action:
+      type: string
+      nullable: true
+
+action_space:
+  type: discrete
+  actions:
+    - restart_service
+    - scale_service
+    - rollback_deployment
+    - inspect_logs
+    - check_metrics
+    - apply_patch
+    - do_nothing
+  parameters:
+    target:
+      type: string
+      enum: [api, database, cache, queue]
+      required: false
+
+reward_range: [-1.0, 2.0]
+
+tasks:
+  easy:
+    name: Service Crash
+    description: API service crashed due to OOM. Clear logs, single-step fix.
+    difficulty: 1
+    optimal_steps: 2
+    
+  medium:
+    name: Connection Pool Exhaustion
+    description: Database connection pool exhausted. Requires diagnosis and patch.
+    difficulty: 2
+    optimal_steps: 3
+    
+  hard:
+    name: Cascading Cache Failure
+    description: Cache invalidation storm causing multi-component failure.
+    difficulty: 3
+    optimal_steps: 4
+
+evaluation:
+  metrics:
+    - success_rate
+    - average_score
+    - average_steps
+    - efficiency
+  
+  grading:
+    correctness_weight: 0.6
+    efficiency_weight: 0.3
+    safety_weight: 0.1
+
+dependencies:
+  - pydantic>=2.0.0
+  - openai>=1.0.0
+  - python>=3.9
+
+repository: https://github.com/yourusername/incident-simulator
+documentation: https://github.com/yourusername/incident-simulator/blob/main/README.md

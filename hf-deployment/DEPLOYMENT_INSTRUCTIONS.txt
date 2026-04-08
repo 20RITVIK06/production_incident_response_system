@@ -1,0 +1,88 @@
+# Hugging Face Spaces Deployment Instructions
+
+## YOU ARE HERE: Ready to Deploy!
+
+All files in this folder are prepared for Hugging Face Spaces.
+
+## Quick Start (3 Steps)
+
+### 1. Create Space
+   - Go to: https://huggingface.co/spaces
+   - Click "Create new Space"
+   - SDK: Docker (IMPORTANT!)
+   - Hardware: CPU basic (free)
+
+### 2. Upload Files
+   - Upload ALL 14 files from this folder
+   - Commit changes
+
+### 3. Wait for Build
+   - Takes 5-10 minutes
+   - Check "Logs" tab for progress
+   - App goes live automatically!
+
+## Files in This Folder
+
+- Dockerfile (Docker configuration)
+- requirements.txt (Python packages)
+- README.md (Space description with YAML header)
+- app.py (Gradio interface)
+- env.py (Main environment)
+- models.py (Type definitions)
+- system_simulator.py (System simulation)
+- tasks.py (Task definitions)
+- advanced_incidents.py (Extended scenarios)
+- __init__.py (Package init)
+- openenv.yaml (OpenEnv metadata)
+- LICENSE (MIT license)
+- .gitignore (Git ignore rules)
+
+## Your Space URL (After Deployment)
+
+https://huggingface.co/spaces/YOUR_USERNAME/production-incident-simulator
+
+## Optional: Add OpenAI API Key
+
+In Space settings -> Variables and secrets:
+- Name: OPENAI_API_KEY
+- Value: your_key_here
+
+## Verification Checklist
+
+After deployment, test:
+- [ ] Interface loads
+- [ ] Can select task (easy/medium/hard)
+- [ ] Can set seed
+- [ ] Can start episode
+- [ ] Can take actions
+- [ ] Observations display
+- [ ] Rewards show
+- [ ] Scoring works
+
+## Troubleshooting
+
+Build fails?
+- Check you selected "Docker" SDK (not Gradio)
+- Verify all files uploaded
+- Check Logs tab for errors
+
+App won't start?
+- Wait 10 minutes (build takes time)
+- Check Logs for Python errors
+- Try Factory reboot in Settings
+
+## Support
+
+Detailed guide: ../HF_DEPLOYMENT_GUIDE.md
+Quick start: ../HF_QUICKSTART.md
+HF Docs: https://huggingface.co/docs/hub/spaces
+
+## Ready to Deploy!
+
+1. Go to https://huggingface.co/spaces
+2. Create new Space (SDK: Docker)
+3. Upload these files
+4. Wait for build
+5. Share your URL!
+
+Good luck!
