@@ -18,6 +18,11 @@ environment:
   class: ProductionIncidentEnv
   module: env
 
+server:
+  module: api_server
+  host: 0.0.0.0
+  port: 7860
+
 observation_space:
   type: dict
   properties:
@@ -121,7 +126,17 @@ evaluation:
 dependencies:
   - pydantic>=2.0.0
   - openai>=1.0.0
+  - flask>=3.0.0
   - python>=3.9
+
+runtime:
+  python_version: "3.11"
+  requirements_file: requirements.txt
 
 repository: https://github.com/20RITVIK06/production_incident_response_system
 documentation: https://github.com/20RITVIK06/production_incident_response_system/blob/main/README.md
+
+inference:
+  script: inference.py
+  baseline_model: gpt-4
+  requires_api_key: true
